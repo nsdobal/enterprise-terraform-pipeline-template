@@ -1,0 +1,38 @@
+trigger:
+  branches:
+    include:
+      - main
+
+variables:
+  serviceConnection: 'nd-terraform-sc'
+  terraformVersion: '1.13.1'
+  backendResourceGroup: 'nd-tfstate'
+  backendStorageAccount: 'ndtfstate202606'
+  backendContainer: 'tfstate'
+  backendStateFile: 'dev.tfstate'
+
+
+pool:
+  vmImage: ubuntu-latest
+
+resources:
+  repositories:
+  - repository: pipeline
+    type: git
+    name: pipeline
+
+stages:
+- template: templates/stages/terraform-plan-stage.yml@pipeline
+  parameters:
+    workingDirectory: $(Build.SourcesDirectory)
+    serviceConnection: $(serviceConnection)
+    terraformVersion: $(terraformVersion)
+    backendResourceGroup: $(backendResourceGroup)
+    backendStorageAccount: $(backendStorageAccount)
+    backendContainer: $(backendContainer)
+    backendStateFile: $(backendStateFile)
+
+- template: templates/stages/terraform-apply-stage.yml@pipeline
+  parameters:
+    workingDirectory: $(Build.SourcesDirectory)
+    serviceConnection: $(serviceConnection)

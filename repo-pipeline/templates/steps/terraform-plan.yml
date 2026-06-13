@@ -1,0 +1,26 @@
+parameters:
+
+- name: workingDirectory
+  type: string
+
+- name: serviceConnection
+  type: string
+
+steps:
+
+- task: TerraformTaskV4@4
+  displayName: Terraform Plan
+
+  inputs:
+    provider: azurerm
+    command: plan
+    workingDirectory: ${{ parameters.workingDirectory }}
+    environmentServiceNameAzureRM: ${{ parameters.serviceConnection }}
+#####
+    commandOptions: '-out=tfplan'
+
+- task: PublishPipelineArtifact@1
+  displayName: Publish Plan Artifact
+  inputs:
+    targetPath: '${{ parameters.workingDirectory }}/tfplan'
+    artifact: tfplan

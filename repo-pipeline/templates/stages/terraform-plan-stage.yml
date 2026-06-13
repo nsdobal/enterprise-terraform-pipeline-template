@@ -1,0 +1,51 @@
+parameters:
+
+- name: workingDirectory
+  type: string
+
+- name: serviceConnection
+  type: string
+
+- name: terraformVersion
+  type: string
+
+- name: backendResourceGroup
+  type: string
+
+- name: backendStorageAccount
+  type: string
+
+- name: backendContainer
+  type: string
+
+- name: backendStateFile
+  type: string
+
+stages:
+- stage: TerraformPlan
+  displayName: Terraform Plan
+  jobs:
+  - job: Plan
+    displayName: Terraform Plan
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - template: ../steps/terraform-install.yml
+      parameters:
+        terraformVersion: ${{ parameters.terraformVersion }}
+    - template: ../steps/terraform-init.yml
+      parameters:
+        workingDirectory: ${{ parameters.workingDirectory }}
+        serviceConnection: ${{ parameters.serviceConnection }}
+        backendResourceGroup: ${{ parameters.backendResourceGroup }}
+        backendStorageAccount: ${{ parameters.backendStorageAccount }}
+        backendContainer: ${{ parameters.backendContainer }}
+        backendStateFile: ${{ parameters.backendStateFile }}
+    - template: ../steps/terraform-validate.yml
+      parameters:
+        workingDirectory: ${{ parameters.workingDirectory }}
+
+    - template: ../steps/terraform-plan.yml
+      parameters:
+        workingDirectory: ${{ parameters.workingDirectory }}
+        serviceConnection: ${{ parameters.serviceConnection }}

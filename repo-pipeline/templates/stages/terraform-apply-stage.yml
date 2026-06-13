@@ -1,0 +1,23 @@
+parameters:
+
+- name: workingDirectory
+  type: string
+
+- name: serviceConnection
+  type: string
+
+stages:
+- stage: TerraformApply
+  displayName: Terraform Apply
+  dependsOn: TerraformPlan
+  jobs:
+  - deployment: Apply
+    environment: PROD
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: ../steps/terraform-apply.yml
+            parameters:
+              workingDirectory: ${{ parameters.workingDirectory }}
+              serviceConnection: ${{ parameters.serviceConnection }}
